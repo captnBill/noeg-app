@@ -13,7 +13,7 @@ phases:
       - npm run build
   post_build:
     commands:
-      - echo Build completed. Preparing to deploy....
+      - echo Build completed. Preparing to deploy...
 artifacts:
   files:
     - '**/*'
