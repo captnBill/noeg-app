@@ -1,4 +1,4 @@
-import logo from './logo.svg';
+import logo from './questioncat.jpg';
 import './App.css';
 
 function App() {
@@ -7,15 +7,15 @@ function App() {
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
-          Edit <code>src/App.js</code> and save to reload.
+          Bro j'ai tellement la flemme c'est insane
         </p>
         <a
           className="App-link"
-          href="https://reactjs.org"
+          href="https://store.steampowered.com/bundle/13013/Monster_Hunter_World_Iceborne_Master_Edition/"
           target="_blank"
           rel="noopener noreferrer"
         >
-          Learn React
+          Jveux rentrer chez moi et jouer a MHW
         </a>
       </header>
     </div>
