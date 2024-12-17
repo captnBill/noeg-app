@@ -1,5 +1,5 @@
 Resources:
-  NoeGamingDynamoDB:
+  NoegDubetonDynamoDB:
     Type: 'AWS::DynamoDB::Table'
     Properties:
       BillingMode: PAY_PER_REQUEST
@@ -9,32 +9,32 @@ Resources:
       KeySchema:
         - AttributeName: id
           KeyType: HASH
-  NoeGamingRestApi:
+  NoegDubetonRestApi:
     Type: 'AWS::ApiGateway::RestApi'
     Properties:
       EndpointConfiguration:
         Types:
           - REGIONAL
-      Name: goegamingapi
-  NoeGamingRestApiDeployment:
+      Name: NoegDubetonapi
+  NoegDubetonRestApiDeployment:
     Type: 'AWS::ApiGateway::Deployment'
     DependsOn:
-      - NoeGamingApiGatewayMethod
+      - NoegDubetonApiGatewayMethod
     Properties:
-      RestApiId: !Ref NoeGamingRestApi
+      RestApiId: !Ref NoegDubetonRestApi
       StageName: test
-  NoeGamingApiGatewayResource:
+  NoegDubetonApiGatewayResource:
     Type: 'AWS::ApiGateway::Resource'
     Properties:
       ParentId: !GetAtt 
-        - NoeGamingRestApi
+        - NoegDubetonRestApi
         - RootResourceId
-      PathPart: NoeGaming
-      RestApiId: !Ref NoeGamingRestApi
-  NoeGamingApiGatewayMethod:
+      PathPart: NoegDubeton
+      RestApiId: !Ref NoegDubetonRestApi
+  NoegDubetonApiGatewayMethod:
     Type: 'AWS::ApiGateway::Method'
     DependsOn:
-      - NoeGamingFunctionApiGatewayPermission
+      - NoegDubetonFunctionApiGatewayPermission
     Properties:
       ApiKeyRequired: false
       AuthorizationType: NONE
@@ -50,17 +50,17 @@ Resources:
             - !Ref 'AWS::Region'
             - ':lambda:path/2015-03-31/functions/'
             - !GetAtt 
-              - NoeGamingFunction
+              - NoegDubetonFunction
               - Arn
             - /invocations
-      ResourceId: !Ref NoeGamingApiGatewayResource
-      RestApiId: !Ref NoeGamingRestApi
-  NoeGamingFunctionApiGatewayPermission:
+      ResourceId: !Ref NoegDubetonApiGatewayResource
+      RestApiId: !Ref NoegDubetonRestApi
+  NoegDubetonFunctionApiGatewayPermission:
     Type: 'AWS::Lambda::Permission'
     Properties:
       Action: 'lambda:InvokeFunction'
       FunctionName: !GetAtt 
-        - NoeGamingFunction
+        - NoegDubetonFunction
         - Arn
       Principal: apigateway.amazonaws.com
       SourceArn: !Join 
@@ -72,9 +72,9 @@ Resources:
           - ':'
           - !Ref 'AWS::AccountId'
           - ':'
-          - !Ref NoeGamingRestApi
+          - !Ref NoegDubetonRestApi
           - /*/*
-  NoeGamingFunctionRole:
+  NoegDubetonFunctionRole:
     Type: 'AWS::IAM::Role'
     Properties:
       AssumeRolePolicyDocument:
@@ -98,7 +98,7 @@ Resources:
                   - 'logs:CreateLogStream'
                   - 'logs:PutLogEvents'
                 Resource: '*'
-  NoeGamingFunction:
+  NoegDubetonFunction:
     Type: 'AWS::Lambda::Function'
     Properties:
       Code:
@@ -113,10 +113,10 @@ Resources:
           }
       Handler: index.handler
       Role: !GetAtt 
-        - NoeGamingFunctionRole
+        - NoegDubetonFunctionRole
         - Arn
       Runtime: nodejs20.x
-  NoeGamingPostApiGateway:
+  NoegDubetonPostApiGateway:
     Type: 'AWS::ApiGateway::Method'
     Properties:
       ApiKeyRequired: false
@@ -133,20 +133,20 @@ Resources:
             - !Ref 'AWS::Region'
             - ':lambda:path/2015-03-31/functions/'
             - !GetAtt 
-              - NoeGamingFunction
+              - NoegDubetonFunction
               - Arn
             - /invocations
-      ResourceId: !Ref NoeGamingApiGatewayResource
-      RestApiId: !Ref NoeGamingRestApi
+      ResourceId: !Ref NoegDubetonApiGatewayResource
+      RestApiId: !Ref NoegDubetonRestApi
     DependsOn:
-      - NoeGamingFunctionApiGatewayPermission
+      - NoegDubetonFunctionApiGatewayPermission
 Outputs:
   ApiUrl:
     Description: URL of the REST API.
     Value: !Join 
       - ''
       - - 'https://'
-        - !Ref NoeGamingRestApi
+        - !Ref NoegDubetonRestApi
         - .execute-api.
         - !Ref 'AWS::Region'
         - .
