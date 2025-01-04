@@ -1,21 +1,24 @@
-import logo from './questioncat.jpg';
+import logo from './img/dubetonlogo.png';
 import './App.css';
 
 function App() {
   return (
     <div className="App">
+      <div className="bg-logo">
+        <img src={logo} className="Bg-logo-img" alt="logo" />
+      </div>
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
-          Bro j'ai tellement la flemme c'est insane
+          Vous devinerez jamais ce qu'on fait
         </p>
         <a
           className="App-link"
-          href="https://store.steampowered.com/bundle/13013/Monster_Hunter_World_Iceborne_Master_Edition/"
+          href="https://fr.wikipedia.org/wiki/Béton_de_ciment"
           target="_blank"
           rel="noopener noreferrer"
         >
-          Jveux rentrer chez moi et jouer a MHW
+          indice : c'est du béton
         </a>
       </header>
     </div>

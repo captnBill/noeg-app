@@ -1,154 +1,33 @@
 Resources:
-  NoegDubetonDynamoDB:
-    Type: 'AWS::DynamoDB::Table'
+  noegDubetonVitrine:
+    Type: 'AWS::S3::Bucket'
     Properties:
-      BillingMode: PAY_PER_REQUEST
-      AttributeDefinitions:
-        - AttributeName: id
-          AttributeType: S
-      KeySchema:
-        - AttributeName: id
-          KeyType: HASH
-  NoegDubetonRestApi:
-    Type: 'AWS::ApiGateway::RestApi'
+      BucketName: noeg-dubeton-vitrine-2
+      WebsiteConfiguration:
+        IndexDocument: index.html
+
+  noegDubetonVitrinePolicy:
+    Type: 'AWS::S3::BucketPolicy'
     Properties:
-      EndpointConfiguration:
-        Types:
-          - REGIONAL
-      Name: NoegDubetonapi
-  NoegDubetonRestApiDeployment:
-    Type: 'AWS::ApiGateway::Deployment'
-    DependsOn:
-      - NoegDubetonApiGatewayMethod
-    Properties:
-      RestApiId: !Ref NoegDubetonRestApi
-      StageName: test
-  NoegDubetonApiGatewayResource:
-    Type: 'AWS::ApiGateway::Resource'
-    Properties:
-      ParentId: !GetAtt 
-        - NoegDubetonRestApi
-        - RootResourceId
-      PathPart: NoegDubeton
-      RestApiId: !Ref NoegDubetonRestApi
-  NoegDubetonApiGatewayMethod:
-    Type: 'AWS::ApiGateway::Method'
-    DependsOn:
-      - NoegDubetonFunctionApiGatewayPermission
-    Properties:
-      ApiKeyRequired: false
-      AuthorizationType: NONE
-      HttpMethod: GET
-      Integration:
-        IntegrationHttpMethod: POST
-        Type: AWS_PROXY
-        Uri: !Join 
-          - ''
-          - - 'arn:'
-            - !Ref 'AWS::Partition'
-            - ':apigateway:'
-            - !Ref 'AWS::Region'
-            - ':lambda:path/2015-03-31/functions/'
-            - !GetAtt 
-              - NoegDubetonFunction
-              - Arn
-            - /invocations
-      ResourceId: !Ref NoegDubetonApiGatewayResource
-      RestApiId: !Ref NoegDubetonRestApi
-  NoegDubetonFunctionApiGatewayPermission:
-    Type: 'AWS::Lambda::Permission'
-    Properties:
-      Action: 'lambda:InvokeFunction'
-      FunctionName: !GetAtt 
-        - NoegDubetonFunction
-        - Arn
-      Principal: apigateway.amazonaws.com
-      SourceArn: !Join 
-        - ''
-        - - 'arn:'
-          - !Ref 'AWS::Partition'
-          - ':execute-api:'
-          - !Ref 'AWS::Region'
-          - ':'
-          - !Ref 'AWS::AccountId'
-          - ':'
-          - !Ref NoegDubetonRestApi
-          - /*/*
-  NoegDubetonFunctionRole:
-    Type: 'AWS::IAM::Role'
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: 2012-10-17
+      Bucket: !Ref noeg-dubeton-vitrine-2
+      PolicyDocument:
         Statement:
-          - Effect: Allow
-            Principal:
-              Service:
-                - lambda.amazonaws.com
-            Action:
-              - 'sts:AssumeRole'
-      Path: /
-      Policies:
-        - PolicyName: AppendToLogsPolicy
-          PolicyDocument:
-            Version: 2012-10-17
-            Statement:
-              - Effect: Allow
-                Action:
-                  - 'logs:CreateLogGroup'
-                  - 'logs:CreateLogStream'
-                  - 'logs:PutLogEvents'
-                Resource: '*'
-  NoegDubetonFunction:
-    Type: 'AWS::Lambda::Function'
+          - Action: 's3:GetObject'
+            Effect: 'Allow'
+            Resource: !Sub 'arn:aws:s3:::${noeg-dubeton-vitrine-2}/*'
+            Principal: '*'
+
+  NoegWebPageRecordSet:
+    Type: 'AWS::Route53::RecordSet'
     Properties:
-      Code:
-        ZipFile: |
-          exports.handler = async (event) => {
-            return {
-              isBase64Encoded: false,
-              statusCode:      200,
-              headers:         { "content-type": "text/plain"},
-              body:            `Your request:\n\n${JSON.stringify(event)}`
-            }
-          }
-      Handler: index.handler
-      Role: !GetAtt 
-        - NoegDubetonFunctionRole
-        - Arn
-      Runtime: nodejs20.x
-  NoegDubetonPostApiGateway:
-    Type: 'AWS::ApiGateway::Method'
-    Properties:
-      ApiKeyRequired: false
-      AuthorizationType: NONE
-      HttpMethod: POST
-      Integration:
-        IntegrationHttpMethod: POST
-        Type: AWS_PROXY
-        Uri: !Join 
-          - ''
-          - - 'arn:'
-            - !Ref 'AWS::Partition'
-            - ':apigateway:'
-            - !Ref 'AWS::Region'
-            - ':lambda:path/2015-03-31/functions/'
-            - !GetAtt 
-              - NoegDubetonFunction
-              - Arn
-            - /invocations
-      ResourceId: !Ref NoegDubetonApiGatewayResource
-      RestApiId: !Ref NoegDubetonRestApi
-    DependsOn:
-      - NoegDubetonFunctionApiGatewayPermission
+      HostedZoneName: e5estiam.com.
+      Name: noegdubetonvitrine.e5estiam.com.
+      Type: A
+      AliasTarget:
+        DNSName: !GetAtt noeg-dubeton-vitrine-2.WebsiteURL
+        HostedZoneId: Z21DNDUVLTQW6Q 
+
 Outputs:
-  ApiUrl:
-    Description: URL of the REST API.
-    Value: !Join 
-      - ''
-      - - 'https://'
-        - !Ref NoegDubetonRestApi
-        - .execute-api.
-        - !Ref 'AWS::Region'
-        - .
-        - !Ref 'AWS::URLSuffix'
-        - /test
+  WebsiteURL:
+    Description: URL of the static website.
+    Value: !GetAtt noeg-dubeton-vitrine-2.WebsiteURL
