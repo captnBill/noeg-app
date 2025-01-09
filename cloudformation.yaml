@@ -9,12 +9,12 @@ Resources:
   noegDubetonVitrinePolicy:
     Type: 'AWS::S3::BucketPolicy'
     Properties:
-      Bucket: !Ref noeg-dubeton-vitrine-2
+      Bucket: !Ref noegDubetonVitrine
       PolicyDocument:
         Statement:
           - Action: 's3:GetObject'
             Effect: 'Allow'
-            Resource: !Sub 'arn:aws:s3:::${noeg-dubeton-vitrine-2}/*'
+            Resource: !Sub 'arn:aws:s3:::${noegDubetonVitrine}/*'
             Principal: '*'
 
   NoegWebPageRecordSet:
@@ -24,10 +24,10 @@ Resources:
       Name: noegdubetonvitrine.e5estiam.com.
       Type: A
       AliasTarget:
-        DNSName: !GetAtt noeg-dubeton-vitrine-2.WebsiteURL
-        HostedZoneId: Z21DNDUVLTQW6Q 
+        DNSName: !GetAtt noegDubetonVitrine.WebsiteURL
+        HostedZoneId: Z21DNDUVLTQW6Q
 
 Outputs:
   WebsiteURL:
     Description: URL of the static website.
-    Value: !GetAtt noeg-dubeton-vitrine-2.WebsiteURL
+    Value: !GetAtt noegDubetonVitrine.WebsiteURL
